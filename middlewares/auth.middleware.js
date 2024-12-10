@@ -1,12 +1,7 @@
 const jwt = require('jsonwebtoken');
 const UserService = require('../services/user.service'); // Dùng để lấy thông tin người dùng từ DB nếu cần
 
-/**
- * Auth middleware để xác thực người dùng
- * @param {Object} req - Request object
- * @param {Object} res - Response object
- * @param {Function} next - Callback để chuyển sang middleware tiếp theo
- */
+
 const auth = async (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');  // Lấy token từ header
    

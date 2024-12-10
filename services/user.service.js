@@ -40,7 +40,7 @@ const UserService = {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) throw new Error('Invalid credentials');
 
-      const token = jwt.sign({ id: user._id, role: user.role }, "JWT_SECRET", { expiresIn: '2h' });
+      const token = jwt.sign({ id: user._id, role: user.role }, "JWT_SECRET", { expiresIn: '24h' });
       return { user, token };
     } catch (error) {
       throw new Error(`Error logging in user: ${error.message}`);

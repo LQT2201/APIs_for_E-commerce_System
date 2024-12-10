@@ -1,124 +1,103 @@
-const ProductService = require('../services/product.service');
+const ProductService = require('../services/product.service')
 
 class ProductController {
-  /**
-   * Create multiple products (with variations) via a POST request
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
-  static async createMultipleProducts(req, res) {
-    try {
-      const productsData = req.body; // Expecting an array of products with variations
-      const result = await ProductService.createProducts(productsData);
-      res.status(200).json({ success: true, message: result });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  }
-
-  // Tạo mới sản phẩm với các biến thể
   static async createProduct(req, res) {
+    const productData = req.body
     try {
-      const productData = req.body;
-      const product = await ProductService.createProduct(productData);
-      res.status(201).json({ success: true, product });
+      const newProduct = await ProductService.createProduct(productData)
+      return res.status(201).json({
+        message:'Tạo sản phẩm thành công',
+        product:newProduct
+      })
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:'Lỗi khi tạo sản phẩm',
+        error: error.message
+      })
     }
   }
 
-  // Lấy danh sách sản phẩm
-  static async getProducts(req, res) {
+  static async getAllProduct(req,res){
     try {
-      const products = await ProductService.getProducts();
-      res.status(200).json({ success: true, products });
+      const allProduct  = await ProductService.getAllProduct()
+      return res.status(200).json({
+        message:"Lấy danh sách sản phẩm",
+        data: allProduct
+      })
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:'Lỗi khi getAllProduct',
+        error: error.message
+      })
     }
   }
 
-  // Lấy danh sách sản phẩm
-  static async getProductsWithDiscount(req, res) {
-    try {
-      const products = await ProductService.getAllProducts();
-      res.status(200).json({ success: true, products });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  }
-
-   // Lấy danh sách sản phẩm
-   static async getProductsWithVariations(req, res) {
-    try {
-      const product = await ProductService.getProductWithVariations();
-      res.status(200).json({ success: true, product });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  }
-
-
-  // Lấy thông tin sản phẩm theo ID
   static async getProductById(req, res) {
+    const {productId} = req.params
     try {
-      const { productId } = req.params;
-      const product = await ProductService.getProductById(productId);
-      if (!product) {
-        return res.status(404).json({ success: false, message: 'Sản phẩm không tồn tại' });
-      }
-      res.status(200).json({ success: true, product });
+      const product = await ProductService.getProductById(productId)
+
+      return res.status(200).json({
+        message:'Lấy sản phẩm theo Id thành công',
+        data:product
+      })
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:'Lỗi khi getAllProduct',
+        error: error.message
+      })
     }
   }
 
-  // Lấy thông tin sản phẩm theo ID bao gom variation va gia final
-  static async getProductWithDetailsById(req, res) {
+  static async updateProduct(req,res) {
+    const {productId} = req.params
+    const {updateData} = req.body
     try {
-      const { productId } = req.params;
-      const product = await ProductService.getProductWithDetails(productId);
-      if (!product) {
-        return res.status(404).json({ success: false, message: 'Sản phẩm không tồn tại' });
-      }
-      res.status(200).json({ success: true, product });
+      const updatedProduct = await ProductService.updateProduct(productId,updateData)
+
+      return res.status(201).json({
+        message:"Cập nhật sản phẩm thành công",
+        data: updatedProduct
+      })
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:'Lỗi khi update product',
+        error: error.message
+      })
     }
   }
 
-  // Lấy thông tin sản phẩm kèm các biến thể
-  static async getProductWithVariations(req, res) {
+  static async deleteProductById(req, res){
+    const {productId} = req.params
     try {
-      const { productId } = req.params;
-      const product = await ProductService.getProductWithVariation(productId);
-      res.status(200).json({ success: true, product });
+      const deletedProduct = await ProductService.deleteProduct(productId)
+      return res.status(200).json({
+        message:"Xóa sản phẩm thành công",
+        data:deletedProduct
+      })
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:'Lỗi khi delete product',
+        error: error.message
+      })
     }
   }
 
-  // Cập nhật thông tin sản phẩm
-  static async updateProduct(req, res) {
+  static async getAllProductByCategory(req,res) {
+    const {categoryId} = req.params
     try {
-      const { productId } = req.params;
-      const productData = req.body;
-      const updatedProduct = await ProductService.updateProduct(productId, productData);
-      res.status(200).json({ success: true, updatedProduct });
+      const productsByCategory = await ProductService.getProductByCategory(categoryId)
+      return res.status(200).json({
+        message:'Lấy sản phẩm theo category thành công',
+        data:productsByCategory
+      })
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  }
-
-  // Xóa sản phẩm
-  static async deleteProduct(req, res) {
-    try {
-      const { productId } = req.params;
-      const result = await ProductService.deleteProduct(productId);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:'Lỗi khi get all product by category',
+        error: error.message
+      })
     }
   }
 }
 
-module.exports = ProductController;
+module.exports = ProductController

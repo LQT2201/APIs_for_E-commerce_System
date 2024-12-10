@@ -2,10 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const productRoutes = require("./routes/product.route");
-const orderRoutes = require("./routes/orderRoute");
-const userRoute = require('./routes/user.route')
-const cartRoute = require('./routes/cart.route')
+const routes = require("./routes/index")
 
 dotenv.config();
 
@@ -26,11 +23,5 @@ mongoose
   .catch((error) => console.log("Database connection error:", error));
 
 // API routes
-const discountRoutes = require('./routes/discount.route');
-
-app.use('/api/discounts', discountRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/cart", cartRoute);
-app.use("/api", userRoute);
+app.use('/api',routes)
 
