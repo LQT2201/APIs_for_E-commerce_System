@@ -2,7 +2,7 @@ const CategoryService = require("../services/category.service")
 
 class CategoryController {
     static async createCategory(req,res) {
-        const {categoryData} = req.body
+        const categoryData = req.body
         try {
             const savedCategory = await CategoryService.createCategory(categoryData)
             return res.status(201).json({

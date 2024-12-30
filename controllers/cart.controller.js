@@ -25,9 +25,9 @@ const CartController = {
 
   updateCartItem: async (req, res) => {
     try {
-      const { productId, newQuantity } = req.body;  // Lấy dữ liệu cập nhật từ body request
+      const { productId,sku, quantity } = req.body;  // Lấy dữ liệu cập nhật từ body request
       const userId = req.user._id;  // Giả sử userId lấy từ thông tin đã đăng nhập
-      const updatedCart = await CartService.updateCartItem(userId, productId, newQuantity);
+      const updatedCart = await CartService.updateCart(userId, productId, sku, quantity);
       res.status(200).json({ success: true, cart: updatedCart });
     } catch (error) {
       res.status(400).json({ success: false, message: error.message });
@@ -36,9 +36,9 @@ const CartController = {
 
   removeCartItem: async (req, res) => {
     try {
-      const { productId } = req.params;  // Lấy productId từ URL params
+      const { productId,sku } = req.body;
       const userId = req.user._id;  // Giả sử userId lấy từ thông tin đã đăng nhập
-      const updatedCart = await CartService.removeCartItem(userId, productId);
+      const updatedCart = await CartService.removeFromCart(userId, productId, sku);
       res.status(200).json({ success: true, cart: updatedCart });
     } catch (error) {
       res.status(400).json({ success: false, message: error.message });

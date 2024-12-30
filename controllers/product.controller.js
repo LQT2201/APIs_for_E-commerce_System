@@ -5,13 +5,14 @@ class ProductController {
     const productData = req.body
     try {
       const newProduct = await ProductService.createProduct(productData)
+
       return res.status(201).json({
         message:'Tạo sản phẩm thành công',
         product:newProduct
       })
     } catch (error) {
       return res.status(500).json({
-        message:'Lỗi khi tạo sản phẩm',
+        message:'Lỗi khi tạo sản phẩm 1',
         error: error.message
       })
     }
@@ -94,6 +95,22 @@ class ProductController {
     } catch (error) {
       return res.status(500).json({
         message:'Lỗi khi get all product by category',
+        error: error.message
+      })
+    }
+  }
+
+  static async searchProduct(req, res){
+    const searchQuery = req.body
+    try {
+      const searchProduct = await ProductService.searchProduct(searchQuery)
+      return res.status(200).json({
+        message:'Search san pham thanh cong',
+        data:searchProduct
+      })
+    } catch (error) {
+      return res.status(500).json({
+        message:'Lỗi khi search',
         error: error.message
       })
     }

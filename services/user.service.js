@@ -98,6 +98,12 @@ const UserService = {
    */
   updateUser: async (userId, updateData) => {
     try {
+      const password = updateData.password
+      if(password) {
+        const hashedPassword = await bcrypt.hash(updateData.password, 5);
+        updateData.password = hashedPassword  
+      }
+
       const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
         new: true, // Return the updated document
         runValidators: true, // Ensure validation rules are applied

@@ -3,10 +3,12 @@ const Category = require("../models/category.model");
 class CategoryService {
     static async createCategory(categoryData) {
         try {
+            console.log(categoryData)
             const newCategory = new Category(categoryData)
             const savedCategory = await newCategory.save()
             return savedCategory
         } catch (error) {
+            console.log(error)
             throw new Error("Lỗi khi tạo category")
         }
     }

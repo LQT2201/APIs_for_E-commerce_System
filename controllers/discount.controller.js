@@ -1,93 +1,88 @@
-const discountService = require('../services/discount.service');
+const Discount = require("../models/discount.model")
+const DiscountService = require("../services/discount.service")
 
-// Controller xử lý request liên quan đến Discount
-const discountController = {
-  // Tạo Discount mới
-  async createDiscount(req, res) {
+class DiscountController {
+  static async createDiscount(req,res) {
+    const discountData = req.body
     try {
-      const discount = await discountService.createDiscount(req.body);
-      res.status(201).json({ success: true, data: discount });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  },
 
-  // Lấy danh sách tất cả Discount
-  async getAllDiscounts(req, res) {
+      const newDiscount = new Discount(discountData)
+
+      if(!newDiscount) throw new Error("Deo tao duoc")
+
+      const savedDiscount = await newDiscount.save()
+      if(!savedDiscount) throw new Error("Deo luu duoc")
+
+ 
+      return res.status(201).json({
+        message:"Tạo discount thành công",
+        data:savedDiscount
+      }) 
+    } catch (error) {
+      return res.status(500).json({
+        message:"Lỗi khi tạo discount controller",
+        error
+      })
+    }
+  }
+
+  static async getAllDiscount(req,res) {
     try {
-      const filter = req.query || {}; // Lấy query filter nếu có
-      const discounts = await discountService.getAllDiscounts(filter);
-      res.status(200).json({ success: true, data: discounts });
+      const discounts = await DiscountService.getAllDiscount()
+      return res.status(200).json({
+        message:'Lấy tất cả discount thành công',
+        data:discounts
+      })
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:"Lỗi khi tạo discount",
+        error: error.message
+      })
     }
-  },
+  }
 
-  // Lấy Discount theo ID
-  async getDiscountById(req, res) {
+  static async getValidDiscount(req,res) {
     try {
-      const { id } = req.params;
-      const discount = await discountService.getDiscountById(id);
-      if (!discount) {
-        return res.status(404).json({ success: false, message: 'Discount not found' });
-      }
-      res.status(200).json({ success: true, data: discount });
+      const discounts = await DiscountService.getAllValidDiscounts()
+      return res.status(200).json({
+        message:'Lấy tất cả valid discount thành công',
+        data:discounts
+      })
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:"Lỗi khi get valid discount",
+        error: error.message
+      })
     }
-  },
+  }
 
-  // Cập nhật Discount theo ID
-  async updateDiscount(req, res) {
+  static async applyDiscount(req,res) {
+    const {cartTotal, discountCode} = req.body
     try {
-      const { id } = req.params;
-      const discount = await discountService.updateDiscount(id, req.body);
-      if (!discount) {
-        return res.status(404).json({ success: false, message: 'Discount not found' });
-      }
-      res.status(200).json({ success: true, data: discount });
+      const newTotal = await DiscountService.applyDiscount(cartTotal, discountCode)
+      return res.status(200).json(newTotal)
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:"Lỗi khi ap udng discount",
+        error: error.message
+      })
     }
-  },
+  }
 
-  // Xóa Discount theo ID
-  async deleteDiscount(req, res) {
+  static async updateDiscount(req,res) {
+    const updateData = req.body
+    const {id} = req.params
     try {
-      const { id } = req.params;
-      const discount = await discountService.deleteDiscount(id);
-      if (!discount) {
-        return res.status(404).json({ success: false, message: 'Discount not found' });
-      }
-      res.status(200).json({ success: true, message: 'Discount deleted successfully' });
+      const newTotal = await DiscountService.updateDiscount(id, updateData)
+      return res.status(200).json(newTotal)
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      return res.status(500).json({
+        message:"Lỗi khi ap udng discount",
+        error: error.message
+      })
     }
-  },
+  }
+  
+}
 
-  // Kiểm tra Discount có hợp lệ không
-  async checkDiscountValidity(req, res) {
-    try {
-      const { id } = req.params;
-      const isValid = await discountService.isDiscountValid(id);
-      res.status(200).json({ success: true, isValid });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  },
-
-  // Kiểm tra Discount có hợp lệ không
-  async applyDiscount(req, res) {
-    try {
-      const { id } = req.params;
-      const {totalOrder} = req.body
-      
-      const discount = await discountService.applyDiscount(id,totalOrder);
-      res.status(200).json({ success: true, discount });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  },
-};
-
-module.exports = discountController;
+module.exports = DiscountController

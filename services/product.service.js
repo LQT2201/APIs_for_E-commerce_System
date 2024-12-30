@@ -1,13 +1,18 @@
 const Product = require('../models/product.model')
+const removeAccents = require("remove-accents");
 
 class ProductService {
     static async createProduct(productData) {
       try {
-        const newProduct = new Product(productData)
-        const savedProduct = await newProduct.save()
-        return savedProduct
+        const newProduct = new Product(productData);
+        const savedProduct = await newProduct.save();
+        return savedProduct;
       } catch (error) {
-        throw new Error('Lỗi khi tạo sản phẩm', error.message)
+        // Log the error to make debugging easier
+        console.error("Error creating product:", error);
+    
+        // Throw a new error with a descriptive message
+        throw new Error(`Lỗi khi tạo sản phẩm: ${error.message}`);
       }
     }
 
@@ -64,6 +69,33 @@ class ProductService {
         throw new Error('Lỗi khi get sản phẩm by id', error.message)
       }
     }
+
+    static async searchProduct(searchQuery) {
+      const query = {};
+    
+      if (searchQuery.name) {
+        query.$text = { $search: searchQuery.name };
+      }
+    
+      // Tìm kiếm theo danh mục
+      if (searchQuery.category) {
+        query.category = searchQuery.category;
+      }
+    
+      // Tìm kiếm theo khoảng giá
+      if (searchQuery.minPrice || searchQuery.maxPrice) {
+        query.price = {};
+        if (searchQuery.minPrice) query.price.$gte = parseFloat(searchQuery.minPrice);
+        if (searchQuery.maxPrice) query.price.$lte = parseFloat(searchQuery.maxPrice);
+      }
+
+      const products = await Product.find(query, {
+        score: { $meta: 'textScore' } // Lấy metadata text score
+      }).sort({ score: { $meta: 'textScore' } }); // Sắp xếp theo mức độ phù hợp
+    
+      return products;
+    }
+    
 }
 
 module.exports = ProductService
